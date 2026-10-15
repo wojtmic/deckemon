@@ -1,12 +1,12 @@
 import subprocess
 import threading
-from util import svg
-from deck import deck, Button
+from deckemon.util import icon
+from deckemon.deck import deck, Button
 
 PLAYER = ["playerctl", "-p", "spotify"]
 
-PLAY = svg("icons/play.svg")
-PAUSE = svg("icons/pause.svg")
+PLAY = icon("play.svg")
+PAUSE = icon("pause.svg")
 
 def toggle():
     subprocess.run([*PLAYER, "play-pause"])

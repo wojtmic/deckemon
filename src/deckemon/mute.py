@@ -1,11 +1,11 @@
-from util import svg
+from deckemon.util import icon
 import subprocess
-from deck import deck, Button
+from deckemon.deck import deck, Button
 
 SRC = '@DEFAULT_AUDIO_SOURCE@'
 
-MIC = svg("icons/mic.svg")
-MIC_MUTED = svg("icons/mic-muted.svg")
+MIC = icon("mic.svg")
+MIC_MUTED = icon("mic-muted.svg")
 
 def is_muted() -> bool:
     out = subprocess.run(

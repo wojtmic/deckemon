@@ -1,5 +1,5 @@
-# deck.py
 import atexit
+import signal
 import threading
 import traceback
 from dataclasses import dataclass
@@ -26,6 +26,8 @@ class _Deck:
         self.device.reset()
         self.keys: list[Button] = [Button() for _ in range(KEY_COUNT)]
         self._font = ImageFont.load_default(size=14)
+        self._lock = threading.Lock()
+        self._closed = False
         self.device.set_key_callback(self._on_key)
         atexit.register(self.close)
 
@@ -44,8 +46,11 @@ class _Deck:
         return PILHelper.to_native_key_format(self.device, img)
 
     def redraw(self):
-        for i, btn in enumerate(self.keys):
-            self.device.set_key_image(i, self._render(btn))
+        with self._lock:
+            if self._closed:
+                return  # background threads may still try to draw during shutdown
+            for i, btn in enumerate(self.keys):
+                self.device.set_key_image(i, self._render(btn))
 
     def _on_key(self, _dev, key, pressed):
         cb = self.keys[key].callback
@@ -56,18 +61,30 @@ class _Deck:
                 traceback.print_exc()
 
     def run(self):
-        """Block until Ctrl+C."""
-        try:
-            threading.Event().wait()
-        except KeyboardInterrupt:
+        """Block until SIGINT (Ctrl+C) or SIGTERM (systemctl stop), then shut down cleanly."""
+        stop = threading.Event()
+
+        def handler(signum, _frame):
+            print(f"received {signal.Signals(signum).name}, shutting down")
+            stop.set()
+
+        signal.signal(signal.SIGINT, handler)
+        signal.signal(signal.SIGTERM, handler)
+
+        while not stop.wait(0.5):
             pass
+        self.close()
 
     def close(self):
-        try:
-            self.device.reset()
-            self.device.close()
-        except Exception:
-            pass
+        with self._lock:
+            if self._closed:
+                return
+            self._closed = True
+            try:
+                self.device.reset()
+                self.device.close()
+            except Exception:
+                pass
 
 
 deck = _Deck()

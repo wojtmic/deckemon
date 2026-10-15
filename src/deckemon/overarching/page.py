@@ -1,8 +1,7 @@
 import threading
 import traceback
 
-from deck import deck, Button
-
+from deckemon.deck import deck, Button
 
 class Page:
     name = "?"

@@ -1,0 +1,22 @@
+[project]
+name = "deckemon"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "wojtmic", email = "mail@wojtmic.dev" }
+]
+requires-python = ">=3.15"
+dependencies = [
+    "keyring>=25.7.0",
+    "pillow>=12.3.0",
+    "psutil>=7.2.2",
+    "streamdeck>=0.10.0",
+]
+
+[project.scripts]
+deckemon = "deckemon.main:main"
+
+[build-system]
+requires = ["uv_build>=0.13.0,<0.14.0"]
+build-backend = "uv_build"

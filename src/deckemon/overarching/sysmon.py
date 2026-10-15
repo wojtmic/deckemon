@@ -6,8 +6,8 @@ from pathlib import Path
 import psutil
 from PIL import Image, ImageDraw, ImageFont
 
-from deck import Button, deck
-from overarching.page import Page
+from deckemon.deck import Button, deck
+from deckemon.overarching.page import Page
 
 HISTORY = 36
 W, H = deck.device.key_image_format()["size"]
